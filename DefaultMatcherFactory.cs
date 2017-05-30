@@ -41,7 +41,7 @@ namespace Zxcvbn
                 new SpatialMatcher()
             };
 
-            matchers.AddRange(dictionaryMatchers);
+            matchers.AddRange(dictionaryMatchers.Select(x => x as IMatcher));
             matchers.Add(new L33tMatcher(dictionaryMatchers));
         }
 

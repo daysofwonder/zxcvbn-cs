@@ -28,7 +28,7 @@ namespace Zxcvbn.Matcher
         const string DictionaryPattern = "dictionary";
 
         private string dictionaryName;
-        private Lazy<Dictionary<string, int>> rankedDictionary;
+        private Dictionary<string, int> rankedDictionary;
 
         /// <summary>
         /// Creates a new dictionary matcher. <paramref name="wordListPath"/> must be the path (relative or absolute) to a file containing one word per line,
@@ -39,7 +39,7 @@ namespace Zxcvbn.Matcher
         public DictionaryMatcher(string name, string wordListPath)
         {
             this.dictionaryName = name;
-            rankedDictionary = new Lazy<Dictionary<string, int>>(() => BuildRankedDictionary(wordListPath));
+            rankedDictionary = BuildRankedDictionary(wordListPath);
         }
 
         /// <summary>
@@ -51,7 +51,7 @@ namespace Zxcvbn.Matcher
             this.dictionaryName = name;
 
             // Must ensure that the dictionary is using lowercase words only
-            rankedDictionary = new Lazy<Dictionary<string, int>>(() => BuildRankedDictionary(wordList.Select(w => w.ToLower())));
+            rankedDictionary = BuildRankedDictionary(wordList.Select(w => w.ToLower()));
         }
 
         /// <summary>
@@ -67,7 +67,7 @@ namespace Zxcvbn.Matcher
             var matches = (from i in Enumerable.Range(0, password.Length)
                           from j in Enumerable.Range(i, password.Length - i)
                           let psub = passwordLower.Substring(i, j - i + 1)
-                          where rankedDictionary.Value.ContainsKey(psub)
+                          where rankedDictionary.ContainsKey(psub)
                           select new DictionaryMatch()
                           {
                               Pattern = DictionaryPattern,
@@ -75,14 +75,14 @@ namespace Zxcvbn.Matcher
                               j = j,
                               Token = password.Substring(i, j - i + 1), // Could have different case so pull from password
                               MatchedWord = psub,
-                              Rank = rankedDictionary.Value[psub],
+                              Rank = rankedDictionary[psub],
                               DictionaryName = dictionaryName,
-                              Cardinality = rankedDictionary.Value.Count
+                              Cardinality = rankedDictionary.Count
                           }).ToList();
 
             foreach (var match in matches) CalculateEntropyForMatch(match);
 
-            return matches;
+            return matches.Select(x => x as Match);
         }
 
         private void CalculateEntropyForMatch(DictionaryMatch match)

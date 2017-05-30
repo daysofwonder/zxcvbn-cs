@@ -57,7 +57,7 @@ namespace Zxcvbn.Matcher
 
             foreach (var match in matches) CalulateL33tEntropy(match);
 
-            return matches;
+            return matches.Select(x => x as Match);
         }
 
         private void CalulateL33tEntropy(L33tDictionaryMatch match)

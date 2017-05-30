@@ -30,7 +30,7 @@ namespace Zxcvbn.Matcher
                 j = g.EndIndex,
                 Entropy = CalculateEntropy(password.Substring(g.StartIndex, g.EndIndex - g.StartIndex + 1)),
                 RepeatChar = g.Key
-            });
+            }).Select(x => x as Match);
         }
 
         private double CalculateEntropy(string match)

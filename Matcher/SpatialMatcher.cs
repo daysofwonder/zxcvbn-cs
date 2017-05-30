@@ -14,7 +14,7 @@ namespace Zxcvbn.Matcher
     {
         const string SpatialPattern = "spatial";
 
-        Lazy<List<SpatialGraph>> spatialGraphs = new Lazy<List<SpatialGraph>>(() => GenerateSpatialGraphs());
+        List<SpatialGraph> spatialGraphs = GenerateSpatialGraphs();
 
         /// <summary>
         /// Match the password against the known keyboard layouts
@@ -24,7 +24,7 @@ namespace Zxcvbn.Matcher
         /// <seealso cref="SpatialMatch"/>
         public IEnumerable<Match> MatchPassword(string password)
         {
-            return spatialGraphs.Value.SelectMany((g) => SpatialMatch(g, password)).ToList();
+            return spatialGraphs.SelectMany((g) => SpatialMatch(g, password)).ToList();
         }
 
         /// <summary>
